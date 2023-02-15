@@ -7,13 +7,26 @@ import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 import { Paper } from "@mui/material";
+import EditDialog from "./EditDialog";
+import { useState } from "react";
 
-export default function ToDoItem() {
+export default function ToDoItem({todo, deletetoDo, edittoDo}) {
+
+const [openDialog, setOpenDialog] = useState(false)
+
+const dialogHandler = () => {
+  setOpenDialog(!openDialog)
+}
+
+
+
   return (
-    <Paper>
+    <>
+    <EditDialog edittoDo={edittoDo} open={openDialog} dialogHandler={dialogHandler} todo={todo}/>
+    <Paper style={{padding: "0.5em 0em"}}>
     <ListItem
       secondaryAction={
-        <IconButton edge="end" aria-label="comments">
+        <IconButton edge="end" aria-label="delete" onClick={() => deletetoDo(todo.id)}>
           <DeleteSweepIcon />
         </IconButton>
       }
@@ -27,9 +40,10 @@ export default function ToDoItem() {
             disableRipple
           />
         </ListItemIcon>
-        <ListItemText primary = {`Line Item`}/>
+        <ListItemText primary = {todo.text} onClick={() => setOpenDialog(true)}/>
       </ListItemButton>
     </ListItem>
     </Paper>
+    </>
   );
 }

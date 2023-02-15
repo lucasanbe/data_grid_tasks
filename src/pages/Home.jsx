@@ -1,30 +1,42 @@
-import { Box } from "@mui/material";
-import React, { useState } from "react";
 import ToDoItem from "../components/ToDoItem";
 import { Container } from "@mui/system";
-import { List } from "@mui/material";
+import { Box, List } from "@mui/material";
 import Form from "../components/Form";
+import { useState } from "react";
 
 export default function Home() {
   const [todos, setTodos] = useState([]);
 
-  const todoHandler = (todo) => {
-    console.log(todo);
-    //setTodos([...todos, todo]);
+  const addtoDo = (todo) => {
+    setTodos([...todos, todo]);
+  };
+
+  const deletetoDo = (id) => {
+    var filtered = todos.filter((todo) => todo.id !== id);
+    setTodos(filtered);
+  };
+
+  const edittoDo = (id, editedText) => {
+    var todosArray = [...todos];
+    for (var i in todosArray){
+      if (todosArray[i].id === id){
+        todosArray[i].text = editedText
+      }
+    }
+    // todos.splice(id, 1, { text: editedText, id: id });
+    setTodos(todosArray);
   };
 
   return (
-    <Box>
-      <Container maxWidth="xs" style={{ marginTop: "1em" }}>
-        <Form todoHandler={todoHandler} />
-        <List sx={{ marginTop: "1em" }}>
-          {todos.map((todo) => (
-            <Box style={{ marginTop: "1em " }}>
-              <ToDoItem />
-            </Box>
-          ))}
-        </List>
-      </Container>
-    </Box>
+    <Container maxWidth="xs" style={{ marginTop: "1em" }}>
+      <Form addtoDo={addtoDo} />
+      <List sx={{ marginTop: "1em" }}>
+        {todos.map((todo) => (
+          <Box key={todo.id} style={{ marginTop: "1em" }}>
+            <ToDoItem edittoDo={edittoDo} todo={todo} deletetoDo={deletetoDo} />
+          </Box>
+        ))}
+      </List>
+    </Container>
   );
 }
