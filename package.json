@@ -7,6 +7,7 @@
     "@emotion/styled": "^11.10.5",
     "@material-ui/core": "^4.12.4",
     "@material-ui/icons": "^4.11.3",
+    "@mui/icons-material": "^5.11.9",
     "@mui/material": "^5.11.9",
     "@mui/styles": "^5.11.9",
     "@mui/x-data-grid": "^5.17.24",
@@ -21,6 +22,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
+    "styled-components": "^5.3.6",
+    "styled-icons": "^10.47.0",
     "uuidv4": "^6.2.13",
     "web-vitals": "^2.1.4"
   },

@@ -1,12 +1,17 @@
-import DataGridForTasks from "./components/DataGrid.jsx";
+
 import "./App.css";
+import Slide from "./components/Slide.jsx"
+import CollapsibleTable from "./components/CollapsibleTable"
 
 function App() {
   return (
     <>
-      <DataGridForTasks />
+    <CollapsibleTable />
     </>
   );
 }
 
 export default App;
+
+
+ {/*  */}
