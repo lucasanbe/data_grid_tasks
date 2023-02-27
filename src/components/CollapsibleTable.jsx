@@ -13,54 +13,43 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import LinearProgress from "@mui/material/LinearProgress";
 import { Button } from "@material-ui/core";
 import AddTaskIcon from "@mui/icons-material/AddTask";
+import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import AddTask from "./NewTask";
 
 //cria um objeto com as informações de uma linha da tabela
-function dadosTabela1(
-  ID,
-  COLABORADOR,
-  CARGO,
-  AREA,
-  FILIAL,
-  OQUE,
-  COMO,
-  QUANDO,
-  ONDE,
-  PORQUE,
-  QUANTO,
-  STATUS
-) {
+function dadosTabela(ID, COLABORADOR, CARGO, AREA, FILIAL, dadosTabela2) {
   return {
     ID,
     COLABORADOR,
     CARGO,
     AREA,
     FILIAL,
-    OQUE,
-    COMO,
-    QUANDO,
-    ONDE,
-    PORQUE,
-    QUANTO,
-    STATUS,
+    dadosTabela2,
   };
 }
 
 // cria um array de objetos com as informações das linhas da tabela
-const linhas_tab1 = [
-  dadosTabela1(
-    1,
-    "Lucas",
-    "Analista de Sistema",
-    "NIT",
-    "EC THE",
-    "Melhorar a autogestão",
-    "Através da ferramenta",
-    "Março/23",
-    "Todas as filiais",
-    "Desorganização",
-    "Zero",
-    50
-  ),
+const formato_tab = [
+  dadosTabela(1, "Lucas", "Analista de Sistema", "NIT", "EC THE", [
+    {
+      OQUE: "Melhorar a autogestão",
+      COMO: "Através da ferramenta",
+      QUANDO: "Março/23",
+      ONDE: "Todas as filiais",
+      PORQUE: "Desorganização",
+      QUANTO: "Zero",
+      STATUS: 50,
+    },
+    {
+      OQUE: "SGM WEB",
+      COMO: "Desenvolvimento de nova aplicação",
+      QUANDO: "Março/23",
+      ONDE: "Todas as filiais",
+      PORQUE: "Acesso às novas ferramentas",
+      QUANTO: "Zero",
+      STATUS: 80,
+    },
+  ]),
 ];
 
 function getProgressColor(status) {
@@ -79,8 +68,11 @@ function Row(props) {
   // cria um estado "open" inicialmente falso para controlar se a linha está aberta ou fechada
   const [open, setOpen] = React.useState(false);
 
+  const [openNewTask, setOpenNewTask] = React.useState(false);
+
   return (
     <React.Fragment>
+      <AddTask openNewTask={openNewTask} setOpenNewTask={setOpenNewTask} />
       {/* cria a linha da tabela */}
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
         {/* cria um botão para expandir/contrair a linha */}
@@ -118,6 +110,7 @@ function Row(props) {
                 color="primary"
                 startIcon={<AddTaskIcon />}
                 size="small"
+                onClick={() => setOpenNewTask(true)}
               >
                 Nova Atividade
               </Button>
@@ -134,49 +127,65 @@ function Row(props) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  <TableRow>
-                    <TableCell>{row.OQUE}</TableCell>
-                    <TableCell>{row.COMO}</TableCell>
-                    <TableCell>{row.QUANDO}</TableCell>
-                    <TableCell>{row.ONDE}</TableCell>
-                    <TableCell>{row.PORQUE}</TableCell>
-                    <TableCell>{row.QUANTO}</TableCell>
-                    <TableCell>
-                      {/*insere linear progress na atividade}*/}
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          width: "100%",
-                        }}
-                      >
-                        <Box sx={{ width: "100%", mr: 1 }}>
-                          <LinearProgress
-                            variant="buffer"
-                            value={row.STATUS}
-                            sx={{
-                              height: "20px",
-                              ".MuiLinearProgress-bar1Buffer": {
-                                backgroundColor: getProgressColor(row.STATUS),
-                              },
-                              ".MuiLinearProgress-bar2Buffer": {
-                                backgroundColor: getProgressColor(row.STATUS),
-                                opacity: 0.6,
-                              },
-                              ".css-8ub8io-MuiLinearProgress-dashed": {
-                                backgroundImage: "none",
-                              },
-                            }}
-                          />
+                  {row.dadosTabela2.map((dadosTabela2Row) => (
+                    <TableRow key={dadosTabela2Row.OQUE}>
+                      <TableCell>{dadosTabela2Row.OQUE}</TableCell>
+                      <TableCell>{dadosTabela2Row.COMO}</TableCell>
+                      <TableCell>{dadosTabela2Row.QUANDO}</TableCell>
+                      <TableCell>{dadosTabela2Row.ONDE}</TableCell>
+                      <TableCell>{dadosTabela2Row.PORQUE}</TableCell>
+                      <TableCell>{dadosTabela2Row.QUANTO}</TableCell>
+                      <TableCell>
+                        {/*insere linear progress na atividade}*/}
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            width: "100%",
+                          }}
+                        >
+                          <Box sx={{ width: "100%", mr: 1 }}>
+                            <LinearProgress
+                              variant="buffer"
+                              value={dadosTabela2Row.STATUS}
+                              sx={{
+                                height: "20px",
+                                ".MuiLinearProgress-bar1Buffer": {
+                                  backgroundColor: getProgressColor(
+                                    dadosTabela2Row.STATUS
+                                  ),
+                                },
+                                ".MuiLinearProgress-bar2Buffer": {
+                                  backgroundColor: getProgressColor(
+                                    dadosTabela2Row.STATUS
+                                  ),
+                                  opacity: 0.6,
+                                },
+                                ".css-8ub8io-MuiLinearProgress-dashed": {
+                                  backgroundImage: "none",
+                                },
+                              }}
+                            />
+                          </Box>
+                          <Box sx={{ minWidth: 10 }}>
+                            <Typography variant="body2" color="text.secondary">
+                              {`${Math.round(dadosTabela2Row.STATUS)}%`}
+                            </Typography>
+                          </Box>
                         </Box>
-                        <Box sx={{ minWidth: 10 }}>
-                          <Typography variant="body2" color="text.secondary">
-                            {`${Math.round(row.STATUS)}%`}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </TableCell>
-                  </TableRow>
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outlined"
+                          color="secondary"
+                          startIcon={<DeleteOutlinedIcon />}
+                          size="small"
+                        >
+                          Excluir Atividade
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </Box>
@@ -189,26 +198,26 @@ function Row(props) {
 
 //retorna a criação de uma tabela com uma linha expansível para cada item no array rows.
 export default function CollapsibleTable() {
+  const [data, setData] = React.useState([{}]);
+
   return (
-    <Box>
-      <Table aria-label="collapsible table">
-        <TableHead>
-          <TableRow>
-            <TableCell></TableCell>
-            <TableCell>ID</TableCell>
-            <TableCell>Colaborador</TableCell>
-            <TableCell>Cargo</TableCell>
-            <TableCell>Área</TableCell>
-            <TableCell>Filial</TableCell>
-            <TableCell></TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {linhas_tab1.map((row) => (
-            <Row key={row.ID} row={row} />
-          ))}
-        </TableBody>
-      </Table>
-    </Box>
+    <Table aria-label="collapsible table">
+      <TableHead>
+        <TableRow>
+          <TableCell></TableCell>
+          <TableCell>ID</TableCell>
+          <TableCell>Colaborador</TableCell>
+          <TableCell>Cargo</TableCell>
+          <TableCell>Área</TableCell>
+          <TableCell>Filial</TableCell>
+          <TableCell></TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {formato_tab.map((row) => (
+          <Row key={row.ID} row={row} />
+        ))}
+      </TableBody>
+    </Table>
   );
 }
