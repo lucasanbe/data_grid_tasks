@@ -11,34 +11,52 @@ import Typography from "@mui/material/Typography";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import LinearProgress from "@mui/material/LinearProgress";
-import { Button } from "@material-ui/core";
 import AddTaskIcon from "@mui/icons-material/AddTask";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
-import AddTask from "./NewTask";
+import AddTask from "./AddTask";
+import { Button } from "@mui/material";
+import setOpenNewTask from "./AddTask";
 
 //cria um objeto com as informações de uma linha da tabela
-function dadosTabela(ID, COLABORADOR, CARGO, AREA, FILIAL, dadosTabela2) {
+function dadosTabela(ID, PROJETO, dadosTabela2) {
   return {
     ID,
-    COLABORADOR,
-    CARGO,
-    AREA,
-    FILIAL,
+    PROJETO,
     dadosTabela2,
   };
 }
 
 // cria um array de objetos com as informações das linhas da tabela
 const formato_tab = [
-  dadosTabela(1, "Lucas", "Analista de Sistema", "NIT", "EC THE", [
+  dadosTabela(1, "SGM - FROTA", [
     {
       OQUE: "Melhorar a autogestão",
       COMO: "Através da ferramenta",
       QUANDO: "Março/23",
       ONDE: "Todas as filiais",
       PORQUE: "Desorganização",
-      QUANTO: "Zero",
+      QUANTO: "R$ 500,00",
       STATUS: 50,
+    },
+    {
+      OQUE: "Treinamento de novos funcionários",
+      COMO: "Através de apresentações e estudos de casos",
+      QUANDO: "Abril/23",
+      ONDE: "Sede da empresa",
+      PORQUE: "Aumentar a eficiência dos novos funcionários",
+      QUANTO: "Zero custo",
+      STATUS: 80,
+    },
+  ]),
+  dadosTabela(2, "SGM - WEB", [
+    {
+      OQUE: "Desenvolvimento de integração com sistema externo",
+      COMO: "Integração de APIs",
+      QUANDO: "Maio/23",
+      ONDE: "Todas as filiais",
+      PORQUE: "Aumentar a eficiência do sistema",
+      QUANTO: "Zero custo",
+      STATUS: 20,
     },
     {
       OQUE: "SGM WEB",
@@ -47,7 +65,7 @@ const formato_tab = [
       ONDE: "Todas as filiais",
       PORQUE: "Acesso às novas ferramentas",
       QUANTO: "Zero",
-      STATUS: 80,
+      STATUS: 90,
     },
   ]),
 ];
@@ -72,7 +90,12 @@ function Row(props) {
 
   return (
     <React.Fragment>
-      <AddTask openNewTask={openNewTask} setOpenNewTask={setOpenNewTask} />
+      <AddTask
+        setFormatoTab={props.setFormatoTab}
+        formatoTab={props.formatoTab}
+        openNewTask={openNewTask}
+        setOpenNewTask={setOpenNewTask}
+      />
       {/* cria a linha da tabela */}
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
         {/* cria um botão para expandir/contrair a linha */}
@@ -87,10 +110,7 @@ function Row(props) {
           </IconButton>
         </TableCell>
         <TableCell>{row.ID}</TableCell>
-        <TableCell>{row.COLABORADOR}</TableCell>
-        <TableCell>{row.CARGO}</TableCell>
-        <TableCell>{row.AREA}</TableCell>
-        <TableCell>{row.FILIAL}</TableCell>
+        <TableCell>{row.PROJETO}</TableCell>
       </TableRow>
       {/* cria uma segunda linha que será exibida quando a primeira linha estiver aberta */}
       <TableRow>
@@ -198,24 +218,55 @@ function Row(props) {
 
 //retorna a criação de uma tabela com uma linha expansível para cada item no array rows.
 export default function CollapsibleTable() {
-  const [data, setData] = React.useState([{}]);
+  const [formatoTab, setFormatoTab] = React.useState([
+    dadosTabela(1, "SGM", [
+      {
+        OQUE: "Melhorar a autogestão",
+        COMO: "Através da ferramenta",
+        QUANDO: "Março/23",
+        ONDE: "Todas as filiais",
+        PORQUE: "Desorganização",
+        QUANTO: "R$ 500,00",
+        STATUS: 50,
+      },
+      {
+        OQUE: "Treinamento de novos funcionários",
+        COMO: "Através de apresentações e estudos de casos",
+        QUANDO: "Abril/23",
+        ONDE: "Sede da empresa",
+        PORQUE: "Aumentar a eficiência dos novos funcionários",
+        QUANTO: "Zero custo",
+        STATUS: 80,
+      },
+    ]),
+  ]);
 
   return (
     <Table aria-label="collapsible table">
       <TableHead>
+        <Button
+          variant="outlined"
+          color="primary"
+          startIcon={<AddTaskIcon />}
+          size="small"
+          onClick={() => setOpenNewTask(true)}
+        >
+          Novo Projeto
+        </Button>
         <TableRow>
-          <TableCell></TableCell>
           <TableCell>ID</TableCell>
-          <TableCell>Colaborador</TableCell>
-          <TableCell>Cargo</TableCell>
-          <TableCell>Área</TableCell>
-          <TableCell>Filial</TableCell>
+          <TableCell>PROJETO</TableCell>
           <TableCell></TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
-        {formato_tab.map((row) => (
-          <Row key={row.ID} row={row} />
+        {formatoTab.map((row) => (
+          <Row
+            setFormatoTab={setFormatoTab}
+            formatoTab={formatoTab}
+            key={row.ID}
+            row={row}
+          />
         ))}
       </TableBody>
     </Table>
