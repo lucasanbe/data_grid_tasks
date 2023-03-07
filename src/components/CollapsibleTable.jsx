@@ -14,7 +14,7 @@ import LinearProgress from "@mui/material/LinearProgress";
 import AddTaskIcon from "@mui/icons-material/AddTask";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import AddTask from "./AddTask";
-import { Button } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import setOpenNewTask from "./AddTask";
 
 //cria um objeto com as informações de uma linha da tabela
@@ -25,50 +25,6 @@ function dadosTabela(ID, PROJETO, dadosTabela2) {
     dadosTabela2,
   };
 }
-
-// cria um array de objetos com as informações das linhas da tabela
-const formato_tab = [
-  dadosTabela(1, "SGM - FROTA", [
-    {
-      OQUE: "Melhorar a autogestão",
-      COMO: "Através da ferramenta",
-      QUANDO: "Março/23",
-      ONDE: "Todas as filiais",
-      PORQUE: "Desorganização",
-      QUANTO: "R$ 500,00",
-      STATUS: 50,
-    },
-    {
-      OQUE: "Treinamento de novos funcionários",
-      COMO: "Através de apresentações e estudos de casos",
-      QUANDO: "Abril/23",
-      ONDE: "Sede da empresa",
-      PORQUE: "Aumentar a eficiência dos novos funcionários",
-      QUANTO: "Zero custo",
-      STATUS: 80,
-    },
-  ]),
-  dadosTabela(2, "SGM - WEB", [
-    {
-      OQUE: "Desenvolvimento de integração com sistema externo",
-      COMO: "Integração de APIs",
-      QUANDO: "Maio/23",
-      ONDE: "Todas as filiais",
-      PORQUE: "Aumentar a eficiência do sistema",
-      QUANTO: "Zero custo",
-      STATUS: 20,
-    },
-    {
-      OQUE: "SGM WEB",
-      COMO: "Desenvolvimento de nova aplicação",
-      QUANDO: "Março/23",
-      ONDE: "Todas as filiais",
-      PORQUE: "Acesso às novas ferramentas",
-      QUANTO: "Zero",
-      STATUS: 90,
-    },
-  ]),
-];
 
 function getProgressColor(status) {
   if (status < 30) {
@@ -99,7 +55,7 @@ function Row(props) {
       {/* cria a linha da tabela */}
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
         {/* cria um botão para expandir/contrair a linha */}
-        <TableCell>
+        <Stack flexDirection="row" gap="15px" alignItems="center">
           <IconButton
             aria-label="expand row"
             size="small"
@@ -108,32 +64,14 @@ function Row(props) {
             {/* ícone de seta para cima ou para baixo, dependendo se a linha está aberta ou fechada */}
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
-        </TableCell>
-        <TableCell>{row.ID}</TableCell>
-        <TableCell>{row.PROJETO}</TableCell>
+          <Typography>Sprint 1</Typography>
+        </Stack>
       </TableRow>
       {/* cria uma segunda linha que será exibida quando a primeira linha estiver aberta */}
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
-              <Typography
-                variant="h6"
-                component="h2"
-                color="primary"
-                marginBottom="10px"
-              >
-                Atividades
-              </Typography>
-              <Button
-                variant="outlined"
-                color="primary"
-                startIcon={<AddTaskIcon />}
-                size="small"
-                onClick={() => setOpenNewTask(true)}
-              >
-                Nova Atividade
-              </Button>
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
@@ -206,6 +144,15 @@ function Row(props) {
                       </TableCell>
                     </TableRow>
                   ))}
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    startIcon={<AddTaskIcon />}
+                    size="small"
+                    onClick={() => setOpenNewTask(true)}
+                  >
+                    Nova Atividade
+                  </Button>
                 </TableBody>
               </Table>
             </Box>
@@ -251,13 +198,8 @@ export default function CollapsibleTable() {
           size="small"
           onClick={() => setOpenNewTask(true)}
         >
-          Novo Projeto
+          Nova Sessão
         </Button>
-        <TableRow>
-          <TableCell>ID</TableCell>
-          <TableCell>PROJETO</TableCell>
-          <TableCell></TableCell>
-        </TableRow>
       </TableHead>
       <TableBody>
         {formatoTab.map((row) => (
