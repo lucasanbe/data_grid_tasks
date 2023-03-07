@@ -15,14 +15,12 @@ import AddTaskIcon from "@mui/icons-material/AddTask";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import AddTask from "./AddTask";
 import { Button, Stack } from "@mui/material";
-import setOpenNewTask from "./AddTask";
 
 //cria um objeto com as informações de uma linha da tabela
-function dadosTabela(ID, PROJETO, dadosTabela2) {
+function dadosTabela(session, dadosTabela) {
   return {
-    ID,
-    PROJETO,
-    dadosTabela2,
+    session,
+    dadosTabela,
   };
 }
 
@@ -36,21 +34,21 @@ function getProgressColor(status) {
   }
 }
 
-function Row(props) {
+function Session(props) {
   // recebe a propriedade "row" que contém os dados da linha
-  const { row } = props;
+  const { row, setListTasks, listTasks, isCheck, openModal, setOpenModal } =
+    props;
   // cria um estado "open" inicialmente falso para controlar se a linha está aberta ou fechada
   const [open, setOpen] = React.useState(false);
-
-  const [openNewTask, setOpenNewTask] = React.useState(false);
 
   return (
     <React.Fragment>
       <AddTask
-        setFormatoTab={props.setFormatoTab}
-        formatoTab={props.formatoTab}
-        openNewTask={openNewTask}
-        setOpenNewTask={setOpenNewTask}
+        setListTasks={setListTasks}
+        listTasks={listTasks}
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+        isCheck={isCheck}
       />
       {/* cria a linha da tabela */}
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
@@ -64,7 +62,7 @@ function Row(props) {
             {/* ícone de seta para cima ou para baixo, dependendo se a linha está aberta ou fechada */}
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
-          <Typography>Sprint 1</Typography>
+          <Typography>{row.session}</Typography>
         </Stack>
       </TableRow>
       {/* cria uma segunda linha que será exibida quando a primeira linha estiver aberta */}
@@ -85,14 +83,14 @@ function Row(props) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.dadosTabela2.map((dadosTabela2Row) => (
-                    <TableRow key={dadosTabela2Row.OQUE}>
-                      <TableCell>{dadosTabela2Row.OQUE}</TableCell>
-                      <TableCell>{dadosTabela2Row.COMO}</TableCell>
-                      <TableCell>{dadosTabela2Row.QUANDO}</TableCell>
-                      <TableCell>{dadosTabela2Row.ONDE}</TableCell>
-                      <TableCell>{dadosTabela2Row.PORQUE}</TableCell>
-                      <TableCell>{dadosTabela2Row.QUANTO}</TableCell>
+                  {row.dadosTabela.map((tasks, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{tasks.OQUE}</TableCell>
+                      <TableCell>{tasks.COMO}</TableCell>
+                      <TableCell>{tasks.QUANDO}</TableCell>
+                      <TableCell>{tasks.ONDE}</TableCell>
+                      <TableCell>{tasks.PORQUE}</TableCell>
+                      <TableCell>{tasks.QUANTO}</TableCell>
                       <TableCell>
                         {/*insere linear progress na atividade}*/}
                         <Box
@@ -105,17 +103,17 @@ function Row(props) {
                           <Box sx={{ width: "100%", mr: 1 }}>
                             <LinearProgress
                               variant="buffer"
-                              value={dadosTabela2Row.STATUS}
+                              value={tasks.STATUS}
                               sx={{
                                 height: "20px",
                                 ".MuiLinearProgress-bar1Buffer": {
                                   backgroundColor: getProgressColor(
-                                    dadosTabela2Row.STATUS
+                                    tasks.STATUS
                                   ),
                                 },
                                 ".MuiLinearProgress-bar2Buffer": {
                                   backgroundColor: getProgressColor(
-                                    dadosTabela2Row.STATUS
+                                    tasks.STATUS
                                   ),
                                   opacity: 0.6,
                                 },
@@ -127,7 +125,7 @@ function Row(props) {
                           </Box>
                           <Box sx={{ minWidth: 10 }}>
                             <Typography variant="body2" color="text.secondary">
-                              {`${Math.round(dadosTabela2Row.STATUS)}%`}
+                              {`${Math.round(tasks.STATUS)}%`}
                             </Typography>
                           </Box>
                         </Box>
@@ -138,6 +136,19 @@ function Row(props) {
                           color="secondary"
                           startIcon={<DeleteOutlinedIcon />}
                           size="small"
+                          onClick={() => {
+                            const taskIndex = row.dadosTabela.findIndex(
+                              (task) => task.ID === tasks.ID
+                            );
+                            const newTasks = [...row.dadosTabela];
+                            newTasks.splice(taskIndex, 1);
+                            const newListTasks = [...listTasks];
+                            newListTasks[newListTasks.indexOf(row)] = {
+                              ...row,
+                              dadosTabela: newTasks,
+                            };
+                            setListTasks(newListTasks);
+                          }}
                         >
                           Excluir Atividade
                         </Button>
@@ -149,7 +160,7 @@ function Row(props) {
                     color="primary"
                     startIcon={<AddTaskIcon />}
                     size="small"
-                    onClick={() => setOpenNewTask(true)}
+                    onClick={() => setOpenModal(true)}
                   >
                     Nova Atividade
                   </Button>
@@ -165,9 +176,13 @@ function Row(props) {
 
 //retorna a criação de uma tabela com uma linha expansível para cada item no array rows.
 export default function CollapsibleTable() {
-  const [formatoTab, setFormatoTab] = React.useState([
-    dadosTabela(1, "SGM", [
+  const [openModalSession, setOpenModalSession] = React.useState(false);
+  const [openModalTask, setOpenModalTask] = React.useState(false);
+
+  const [listTasks, setListTasks] = React.useState([
+    dadosTabela("Sprint 1", [
       {
+        ID: 0,
         OQUE: "Melhorar a autogestão",
         COMO: "Através da ferramenta",
         QUANDO: "Março/23",
@@ -177,6 +192,7 @@ export default function CollapsibleTable() {
         STATUS: 50,
       },
       {
+        ID: 1,
         OQUE: "Treinamento de novos funcionários",
         COMO: "Através de apresentações e estudos de casos",
         QUANDO: "Abril/23",
@@ -189,28 +205,41 @@ export default function CollapsibleTable() {
   ]);
 
   return (
-    <Table aria-label="collapsible table">
-      <TableHead>
-        <Button
-          variant="outlined"
-          color="primary"
-          startIcon={<AddTaskIcon />}
-          size="small"
-          onClick={() => setOpenNewTask(true)}
-        >
-          Nova Sessão
-        </Button>
-      </TableHead>
-      <TableBody>
-        {formatoTab.map((row) => (
-          <Row
-            setFormatoTab={setFormatoTab}
-            formatoTab={formatoTab}
-            key={row.ID}
-            row={row}
-          />
-        ))}
-      </TableBody>
-    </Table>
+    <Box>
+      <AddTask
+        setListTasks={setListTasks}
+        listTasks={listTasks}
+        isCheck={false}
+        setOpenModal={setOpenModalSession}
+        openModal={openModalSession}
+      />
+
+      <Table aria-label="collapsible table">
+        <TableHead>
+          <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<AddTaskIcon />}
+            size="small"
+            onClick={() => setOpenModalSession(true)}
+          >
+            Nova Sessão
+          </Button>
+        </TableHead>
+        <TableBody>
+          {listTasks.map((row, index) => (
+            <Session
+              setListTasks={setListTasks}
+              listTasks={listTasks}
+              key={index}
+              row={row}
+              isCheck={true}
+              setOpenModal={setOpenModalTask}
+              openModal={openModalTask}
+            />
+          ))}
+        </TableBody>
+      </Table>
+    </Box>
   );
 }
