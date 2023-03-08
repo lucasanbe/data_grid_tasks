@@ -14,7 +14,13 @@ import LinearProgress from "@mui/material/LinearProgress";
 import AddTaskIcon from "@mui/icons-material/AddTask";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import AddTask from "./AddTask";
-import { Button, Stack } from "@mui/material";
+import { Avatar, Button, Chip, Stack } from "@mui/material";
+import "dayjs/locale/pt-br";
+import { ptBR } from "@mui/x-date-pickers";
+import Checkbox from "@mui/material/Checkbox";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 
 //cria um objeto com as informações de uma linha da tabela
 function dadosTabela(session, dadosTabela) {
@@ -34,12 +40,46 @@ function getProgressColor(status) {
   }
 }
 
+function stringToColor(string) {
+  let hash = 0;
+  let i;
+
+  for (i = 0; i < string.length; i += 1) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  let color = "#";
+
+  for (i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += `00${value.toString(16)}`.slice(-2);
+  }
+
+  return color;
+}
+
+function stringAvatar(name) {
+  return {
+    sx: {
+      bgcolor: stringToColor(name),
+    },
+    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+  };
+}
+
 function Session(props) {
   // recebe a propriedade "row" que contém os dados da linha
   const { row, setListTasks, listTasks, isCheck, openModal, setOpenModal } =
     props;
   // cria um estado "open" inicialmente falso para controlar se a linha está aberta ou fechada
   const [open, setOpen] = React.useState(false);
+
+  const [valueInicio, setValueInicio] = React.useState("");
+
+  const [valueFim, setValueFim] = React.useState("");
+
+  const ptBRLocale =
+    ptBR.components.MuiLocalizationProvider.defaultProps.localeText;
 
   return (
     <React.Fragment>
@@ -73,9 +113,11 @@ function Session(props) {
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
-                    <TableCell>O QUÊ?</TableCell>
+                    <TableCell>TAREFA</TableCell>
+                    <TableCell>COLABORADOR</TableCell>
                     <TableCell>COMO?</TableCell>
-                    <TableCell>QUANDO?</TableCell>
+                    <TableCell>INÍCIO</TableCell>
+                    <TableCell>FIM</TableCell>
                     <TableCell>ONDE?</TableCell>
                     <TableCell>POR QUE?</TableCell>
                     <TableCell>QUANTO?</TableCell>
@@ -86,8 +128,55 @@ function Session(props) {
                   {row.dadosTabela.map((tasks, index) => (
                     <TableRow key={index}>
                       <TableCell>{tasks.OQUE}</TableCell>
+                      <TableCell>
+                        {/*insere avatar na atividade*/}
+                        <Chip
+                          avatar={
+                            <Avatar {...stringAvatar(tasks.QUEM)}></Avatar>
+                          }
+                          variant="outlined"
+                          label={tasks.QUEM}
+                        ></Chip>
+                      </TableCell>
                       <TableCell>{tasks.COMO}</TableCell>
-                      <TableCell>{tasks.QUANDO}</TableCell>
+                      <TableCell>
+                        {/*QUANDOINICIO */}
+                        <Box>
+                          <LocalizationProvider
+                            dateAdapter={AdapterDayjs}
+                            adapterLocale="pt-br"
+                            localeText={ptBRLocale}
+                          >
+                            <Box width="170px">
+                              <DesktopDatePicker
+                                label="Data Início"
+                                value={valueInicio}
+                                onChange={(newValue) =>
+                                  setValueInicio(newValue)
+                                }
+                              />
+                            </Box>
+                          </LocalizationProvider>
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        {/*QUANDOFIM */}
+                        <Box>
+                          <LocalizationProvider
+                            dateAdapter={AdapterDayjs}
+                            adapterLocale="pt-br"
+                            localeText={ptBRLocale}
+                          >
+                            <Box width="170px">
+                              <DesktopDatePicker
+                                label="Data Fim"
+                                value={valueFim}
+                                onChange={(newValue) => setValueFim(newValue)}
+                              />
+                            </Box>
+                          </LocalizationProvider>
+                        </Box>
+                      </TableCell>
                       <TableCell>{tasks.ONDE}</TableCell>
                       <TableCell>{tasks.PORQUE}</TableCell>
                       <TableCell>{tasks.QUANTO}</TableCell>
@@ -184,8 +273,10 @@ export default function CollapsibleTable() {
       {
         ID: 0,
         OQUE: "Melhorar a autogestão",
+        QUEM: "Lucas Andrade Bezerra",
         COMO: "Através da ferramenta",
-        QUANDO: "Março/23",
+        QUANDOINICIO: "05/11/2022",
+        QUANDOFIM: "02/02/2023",
         ONDE: "Todas as filiais",
         PORQUE: "Desorganização",
         QUANTO: "R$ 500,00",
@@ -194,8 +285,10 @@ export default function CollapsibleTable() {
       {
         ID: 1,
         OQUE: "Treinamento de novos funcionários",
+        QUEM: "Deborah Soares",
         COMO: "Através de apresentações e estudos de casos",
-        QUANDO: "Abril/23",
+        QUANDOINICIO: "05/02/2023",
+        QUANDOFIM: "03/03/2023",
         ONDE: "Sede da empresa",
         PORQUE: "Aumentar a eficiência dos novos funcionários",
         QUANTO: "Zero custo",

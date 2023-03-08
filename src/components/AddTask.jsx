@@ -16,8 +16,10 @@ const AddTask = ({
   isCheck,
 }) => {
   const [oque, setOque] = React.useState("");
+  const [quem, setQuem] = React.useState("");
   const [como, setComo] = React.useState("");
-  const [quando, setQuando] = React.useState("");
+  const [quandoinicio, setQuandoInicio] = React.useState("");
+  const [quandofim, setQuandoFim] = React.useState("");
   const [onde, setOnde] = React.useState("");
   const [porque, setPorque] = React.useState("");
   const [quanto, setQuanto] = React.useState("");
@@ -35,8 +37,10 @@ const AddTask = ({
 
     const newTask = {
       OQUE: oque,
+      QUEM: quem,
       COMO: como,
-      QUANDO: quando,
+      QUANDOINICIO: quandoinicio,
+      QUANDOFIM: quandofim,
       ONDE: onde,
       PORQUE: porque,
       QUANTO: quanto,
@@ -70,6 +74,16 @@ const AddTask = ({
               </Grid>
               <Grid item xs={6}>
                 <TextField
+                  onChange={(e) => setQuem(e.target.value)}
+                  autoFocus
+                  margin="dense"
+                  id="QUEM"
+                  label="Quem?"
+                  variant="standard"
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
                   onChange={(e) => setComo(e.target.value)}
                   autoFocus
                   margin="dense"
@@ -80,11 +94,21 @@ const AddTask = ({
               </Grid>
               <Grid item xs={6}>
                 <TextField
-                  onChange={(e) => setQuando(e.target.value)}
+                  onChange={(e) => setQuandoInicio(e.target.value)}
                   autoFocus
                   margin="dense"
-                  id="QUANDO"
-                  label="Quando?"
+                  id="QUANDOINICIO"
+                  label="Início"
+                  variant="standard"
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  onChange={(e) => setQuandoFim(e.target.value)}
+                  autoFocus
+                  margin="dense"
+                  id="QUANDOFIM"
+                  label="Fim"
                   variant="standard"
                 />
               </Grid>
